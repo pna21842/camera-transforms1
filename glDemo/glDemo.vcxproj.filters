@@ -51,6 +51,9 @@
     <ClInclude Include="TextureQuad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GUClock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -75,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TextureQuad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUClock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

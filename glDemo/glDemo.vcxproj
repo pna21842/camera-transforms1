@@ -137,6 +137,7 @@
     <ClInclude Include="GLFW\glfw3.h" />
     <ClInclude Include="GLFW\glfw3native.h" />
     <ClInclude Include="GL\glew.h" />
+    <ClInclude Include="GUClock.h" />
     <ClInclude Include="PlanetSystem.h" />
     <ClInclude Include="RandomStars.h" />
     <ClInclude Include="star-vbo.h" />
@@ -146,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core.cpp" />
+    <ClCompile Include="GUClock.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlanetSystem.cpp" />
     <ClCompile Include="RandomStars.cpp" />

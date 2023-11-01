@@ -44,10 +44,10 @@ struct PlanetaryBody {
 		this->rotationSpeed = rotationSpeed;
 	}
 
-	void update() {
+	void update(float tDelta) {
 
-		orbitAngle += orbitSpeed;
-		rotationAngle += rotationSpeed;
+		orbitAngle += orbitSpeed * tDelta;
+		rotationAngle += rotationSpeed * tDelta;
 	}
 
 	
@@ -69,6 +69,6 @@ public:
 	
 	// Initialisation, update (called per-frame) and render functions
 	void initialise();
-	void update();
+	void update(float tDelta);
 	void render(glm::mat4 cameraTransform);
 };

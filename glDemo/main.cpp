@@ -5,6 +5,7 @@
 #include "RandomStars.h"
 #include "PlanetSystem.h"
 #include "TextureQuad.h"
+#include "GUClock.h"
 
 
 using namespace std;
@@ -12,6 +13,9 @@ using namespace glm;
 
 
 // global variables
+
+GUClock* gameClock = nullptr;
+
 SimplePlanetSystem planets = SimplePlanetSystem();
 
 GLuint backgroundTexture = 0;
@@ -50,8 +54,9 @@ int main() {
 	//
 	// 1. Initialisation
 	//
-	
 
+	gameClock = new GUClock();
+	
 	// Initialise glfw and setup window
 	glfwInit();
 
@@ -116,6 +121,13 @@ int main() {
 	}
 
 	glfwTerminate();
+
+	if (gameClock) {
+
+		gameClock->stop();
+		gameClock->reportTimingData();
+	}
+
 	return 0;
 }
 
@@ -186,6 +198,75 @@ void renderScene()
 }
 
 
+// Function called to animate elements in the scene
+void updateScene() {
+
+	float tDelta = 0.0f;
+
+	if (gameClock) {
+
+		gameClock->tick();
+		tDelta = (float)gameClock->gameTimeDelta();
+	}
+
+	planets.update(tDelta);
+
+	// Update player
+	if (zoomInPressed) {
+		//cameraZoom = std::max(0.1f, cameraZoom - 0.75f * tDelta);
+		cameraZoom *= 1.0f - ((1.0f - 0.5f) * tDelta);
+	}
+	else if (zoomOutPressed) {
+		//cameraZoom = cameraZoom + 1.5f * tDelta;
+		cameraZoom *= 1.0f + (1.0f * tDelta);
+	}
+
+	// Update player orientation
+	if (rotateLeftPressed) {
+
+		playerOrientation += 90.0f * tDelta;
+	}
+	else if (rotateRightPressed) {
+
+		playerOrientation -= 90.0f * tDelta;
+	}
+
+	// Update player velocity
+	if (acceleratePressed) {
+
+		// calculate rotation matrix from orientation of player
+		mat4 R = rotate(identity<mat4>(), radians(playerOrientation), vec3(0.0f, 0.0f, 1.0f));
+		// get the x basis vector (the ship sprite points along the x axis when no rotation, so the x axis is the "forward" direction
+		vec4 xBasis = R[0];
+		// get the (x, y) elements to represent the direction vector we need to accelerate in (it's the direction the ship is pointing in)
+		float dx = xBasis.x;
+		float dy = xBasis.y;
+		// scale (dx, dy) and add to the velocity vector
+		playerVelocity.x += dx * 0.5f * tDelta;
+		playerVelocity.y += dy * 0.5f * tDelta;
+	}
+	else if (deceleratePressed) {
+
+		// calculate rotation matrix from orientation of player
+		mat4 R = rotate(identity<mat4>(), radians(playerOrientation), vec3(0.0f, 0.0f, 1.0f));
+		// get the x basis vector (the ship sprite points along the x axis when no rotation, so the x axis is the "forward" direction
+		vec4 xBasis = R[0];
+		// get the (x, y) elements to represent the direction vector we need to accelerate in.  For deceleration we set the vector to point in the opposite direction the ship is facing, so we negate the x, y values
+		float dx = -xBasis.x;
+		float dy = -xBasis.y;
+		// scale (dx, dy) and add to the velocity vector
+		playerVelocity.x += dx * 0.5f * tDelta;
+		playerVelocity.y += dy * 0.5f * tDelta;
+	}
+
+	// Update player position
+	playerPos.x += playerVelocity.x * tDelta;
+	playerPos.y += playerVelocity.y * tDelta;
+
+	// Centre camera on player
+	cameraPos.x = playerPos.x;
+	cameraPos.y = playerPos.y;
+}
 
 
 // Function to call when window resized
@@ -263,63 +344,3 @@ void keyboardHandler(GLFWwindow* window, int key, int scancode, int action, int 
 	}
 }
 
-
-// Function called to animate elements in the scene
-void updateScene() {
-
-	planets.update();
-
-	// Update player
-	if (zoomInPressed) {
-		cameraZoom *= 0.9995f;
-	}
-	else if (zoomOutPressed) {
-		cameraZoom *= 1.0005f;
-	}
-
-	// Update player orientation
-	if (rotateLeftPressed) {
-
-		playerOrientation += 0.05f;
-	}
-	else if (rotateRightPressed) {
-
-		playerOrientation -= 0.05f;
-	}
-
-	// Update player velocity
-	if (acceleratePressed) {
-
-		// calculate rotation matrix from orientation of player
-		mat4 R = rotate(identity<mat4>(), radians(playerOrientation), vec3(0.0f, 0.0f, 1.0f));
-		// get the x basis vector (the ship sprite points along the x axis when no rotation, so the x axis is the "forward" direction
-		vec4 xBasis = R[0];
-		// get the (x, y) elements to represent the direction vector we need to accelerate in (it's the direction the ship is pointing in)
-		float dx = xBasis.x;
-		float dy = xBasis.y;
-		// scale (dx, dy) and add to the velocity vector
-		playerVelocity.x += dx * 0.0000001f;
-		playerVelocity.y += dy * 0.0000001f;
-	}
-	else if (deceleratePressed) {
-
-		// calculate rotation matrix from orientation of player
-		mat4 R = rotate(identity<mat4>(), radians(playerOrientation), vec3(0.0f, 0.0f, 1.0f));
-		// get the x basis vector (the ship sprite points along the x axis when no rotation, so the x axis is the "forward" direction
-		vec4 xBasis = R[0];
-		// get the (x, y) elements to represent the direction vector we need to accelerate in.  For deceleration we set the vector to point in the opposite direction the ship is facing, so we negate the x, y values
-		float dx = -xBasis.x;
-		float dy = -xBasis.y;
-		// scale (dx, dy) and add to the velocity vector
-		playerVelocity.x += dx * 0.0000001f;
-		playerVelocity.y += dy * 0.0000001f;
-	}
-
-	// Update player position
-	playerPos.x += playerVelocity.x;
-	playerPos.y += playerVelocity.y;
-
-	// Centre camera on player
-	cameraPos.x = playerPos.x;
-	cameraPos.y = playerPos.y;
-}

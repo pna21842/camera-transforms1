@@ -38,18 +38,18 @@ void SimplePlanetSystem::initialise() {
 	satelliteSystem = vector<PlanetaryBody>(4);
 
 	satelliteSystem[0] = PlanetaryBody(planetTexture[0], 0.0f, 0.0f, 0.0f, 2.0f, 0.0f, 0.0f);
-	satelliteSystem[1] = PlanetaryBody(planetTexture[1], 3.0f, 0.0f, 0.0f, 0.5f, radians(0.05f), radians(0.02f));
-	satelliteSystem[2] = PlanetaryBody(planetTexture[2], 7.0f, radians(90.0f), 0.0f, 0.7f, radians(0.005f), radians(0.01f));
-	satelliteSystem[3] = PlanetaryBody(planetTexture[6], 11.0f, radians(-45.0f), 0.0f, 1.5f, radians(0.0075f), radians(0.1f));
+	satelliteSystem[1] = PlanetaryBody(planetTexture[1], 3.0f, 0.0f, 0.0f, 0.5f, radians(20.0f), radians(10.0f));
+	satelliteSystem[2] = PlanetaryBody(planetTexture[2], 7.0f, radians(90.0f), 0.0f, 0.7f, radians(5.0f), radians(90.0f));
+	satelliteSystem[3] = PlanetaryBody(planetTexture[6], 11.0f, radians(-45.0f), 0.0f, 1.5f, radians(10.0f), radians(20.0f));
 }
 
 
 
 // Update is called per-frame in the main update function - we change the orbit and moon rotation values so when we create the matrices at render time they model the new position and orientation of the moon.
-void SimplePlanetSystem::update() {
+void SimplePlanetSystem::update(float tDelta) {
 
 	for (int i = 0; i < satelliteSystem.size(); i++) {
-		satelliteSystem[i].update();
+		satelliteSystem[i].update(tDelta);
 	}
 }
 
