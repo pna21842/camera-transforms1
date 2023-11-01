@@ -26,9 +26,14 @@ vec2 playerVelocity = vec2(0.0f, 0.0f);
 float playerOrientation = 0.0f; // orientation in degrees
 GLuint playerSpriteTexture = 0;
 
+// Window size
+const unsigned int initWidth = 512;
+const unsigned int initHeight = 512;
+
 // Camera variables
 float cameraZoom = 1.0f;
 vec2 cameraPos = vec2(0.0f, 0.0f);
+float viewAspect = (float)initHeight / (float)initWidth;
 
 // Keyboard input state
 bool zoomInPressed = false;
@@ -38,9 +43,7 @@ bool rotateRightPressed = false;
 bool acceleratePressed = false;
 bool deceleratePressed = false;
 
-// Window size
-const unsigned int initWidth = 512;
-const unsigned int initHeight = 512;
+
 
 // Function prototypes
 void renderScene();
@@ -139,7 +142,7 @@ void renderScene()
 	// Clear the rendering window
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	mat4 orthoProjection = ortho(-cameraZoom, cameraZoom, -cameraZoom, cameraZoom);
+	mat4 orthoProjection = ortho(-cameraZoom, cameraZoom, -cameraZoom * viewAspect, cameraZoom * viewAspect);
 	mat4 viewTransform = glm::translate(identity<mat4>(), vec3(-cameraPos.x, -cameraPos.y, 0.0f));
 	mat4 cameraTransform = orthoProjection * viewTransform;
 
@@ -213,15 +216,15 @@ void updateScene() {
 
 	// Update player
 	if (zoomInPressed) {
-		//cameraZoom = std::max(0.1f, cameraZoom - 0.75f * tDelta);
-		cameraZoom *= 1.0f - ((1.0f - 0.5f) * tDelta);
+
+		cameraZoom *= 1.0f - (0.5f * tDelta);
 	}
 	else if (zoomOutPressed) {
-		//cameraZoom = cameraZoom + 1.5f * tDelta;
-		cameraZoom *= 1.0f + (1.0f * tDelta);
+
+		cameraZoom *= 1.0f + tDelta;
 	}
 
-	// Update player orientation
+	// Update player orientation (90 degree rotation per second rotation speed)
 	if (rotateLeftPressed) {
 
 		playerOrientation += 90.0f * tDelta;
@@ -272,6 +275,7 @@ void updateScene() {
 // Function to call when window resized
 void resizeWindow(GLFWwindow* window, int width, int height)
 {
+	viewAspect = (float)height / (float)width;
 	glViewport(0, 0, width, height);		// Draw into entire window
 }
 
