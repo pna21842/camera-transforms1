@@ -69,7 +69,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
 
-	GLFWwindow* window = glfwCreateWindow(initWidth, initHeight, "Real-Time Computer Graphics", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(initWidth, initHeight, "CIS5013", NULL, NULL);
 
 	// Check window was created successfully
 	if (window == NULL)
@@ -119,6 +119,11 @@ int main() {
 		updateScene();
 		renderScene();						// Render into the current buffer
 		glfwSwapBuffers(window);			// Displays what was just rendered (using double buffering).
+
+		// update window title
+		char timingString[256];
+		sprintf_s(timingString, 256, "CIS5013: Average fps: %.0f; Average spf: %f", gameClock->averageFPS(), gameClock->averageSPF() / 1000.0f);
+		glfwSetWindowTitle(window, timingString);
 
 		glfwPollEvents();					// Use this version when animating as fast as possible
 	}
